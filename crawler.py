@@ -26,7 +26,14 @@ def processTxt(file):
         for word in line.split():
             print (word)
 
-if (os.path.isdir(sys.argv[1])):
-    for entry in os.listdir(sys.argv[1]):
-        if (os.path.isfile(entry)):
-            processFile(entry)
+def processDirectory(dir):
+    if (os.path.isdir(dir)):
+        for file in os.listdir(dir):
+            if (os.path.isfile(file)):
+                processFile(file)
+            if (os.path.isdir(file)):
+                processDirectory(file)
+    else:
+        print('Error, {} is not a directory.'.format(dir))
+
+processDirectory(sys.argv[1])
