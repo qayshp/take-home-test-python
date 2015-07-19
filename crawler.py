@@ -28,12 +28,10 @@ def processTxt(file):
 
 def processDirectory(dir):
     if (os.path.isdir(dir)):
-        for file in os.listdir(dir):
-            if (os.path.isfile(file)):
-                processFile(file)
-            if (os.path.isdir(file)):
-                processDirectory(file)
+        for root, dirs, files in os.walk(dir):
+            for file in files:
+                processFile(os.path.join(root, file))
     else:
         print('Error, {} is not a directory.'.format(dir))
 
-processDirectory(sys.argv[1])
+processDirectory(os.path.abspath(sys.argv[1]))
