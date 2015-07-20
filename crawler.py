@@ -11,41 +11,41 @@ from collections import defaultdict
 
 lengthMap = defaultdict(int)
 
-def processFile(file, openZip=None):
+def process_file(file, openZip=None):
     if file.lower().endswith(".txt"):
         logging.info('Found txt file: {}'.format(file))
         if (openZip):
-            processTxt(openZip.open(file, 'r'))
+            process_txt(openZip.open(file, 'r'))
         else:
-            processTxt(open(file))
+            process_txt(open(file))
     elif file.lower().endswith(".zip"):
         logging.info('Found zip file: {}'.format(file))
-        processZip(file)
+        process_zip(file)
         logging.info('Done with zip file: {}'.format(file))
 
-def processZip(file):
+def process_zip(file):
     with zipfile.ZipFile(file, 'r') as openZip:
         for zippedFile in openZip.namelist():
-            processFile(zippedFile, openZip)
+            process_file(zippedFile, openZip)
 
-def processTxt(file):
+def process_txt(file):
     for line in file:
         for word in line.split():
             logging.debug("%s :%s", len(word), word)
             lengthMap[len(word)] += 1
 
-def processDirectory(dir):
+def process_directory(dir):
     if (os.path.isdir(dir)):
         for root, dirs, files in os.walk(dir):
             for file in files:
-                processFile(os.path.join(root, file))
+                process_file(os.path.join(root, file))
     else:
         print('Error, {} is not a directory.'.format(dir))
 
 log_level = sys.argv[2] if len(sys.argv)>2 else getattr(logging, "INFO")
 logging.basicConfig(level=log_level)
 
-processDirectory(os.path.abspath(sys.argv[1]))
+process_directory(os.path.abspath(sys.argv[1]))
 print(str(lengthMap))
 
 
