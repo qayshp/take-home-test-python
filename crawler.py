@@ -4,6 +4,7 @@ import numpy as np
 import magic
 import sys
 import os
+import tarfile
 import logging
 import getopt
 import matplotlib.pyplot as plt
@@ -23,9 +24,19 @@ def process_file(file, openZip=None):
         process_zip(file)
         logging.info('Done with zip file: {}'.format(file))
 
+    elif file.lower().endswith(".tgz") or file.lower().endswith(".tar.gz"):
+        logging.info('Found tgz file: {}'.format(file))
+        # process_tgz(file)
+        logging.info('Done with tgz file: {}'.format(file))
+
 def process_zip(file):
     with zipfile.ZipFile(file, 'r') as openZip:
         for zippedFile in openZip.namelist():
+            process_file(zippedFile, openZip)
+
+def process_tgz(file):
+    with tarfile.open(file, 'r:gz') as openZip:
+        for zippedFile in openZip.getnames():
             process_file(zippedFile, openZip)
 
 def process_txt(file):
