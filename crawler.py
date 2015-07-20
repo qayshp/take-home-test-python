@@ -4,6 +4,7 @@ import numpy as np
 import magic
 import sys
 import os
+import click
 import tarfile
 import logging
 import getopt
@@ -45,9 +46,10 @@ def process_txt(file):
             logging.debug("%s :%s", len(word), word)
             lengthMap[len(word)] += 1
 
-def process_directory(dir):
+def process_directory(dir, followlinks):
     if (os.path.isdir(dir)):
-        for root, dirs, files in os.walk(top=dir, followlinks=False):
+        for root, dirs, files in os.walk(top=dir, followlinks=followlinks):
+            print(followlinks)
             for file in files:
                 process_file(os.path.join(root, file))
     else:
@@ -67,9 +69,16 @@ def draw_histogram(data):
     ax.hist(create_plot_array(data),numBins,color='green',alpha=0.8)
     plt.show()
 
-log_level = sys.argv[2] if len(sys.argv)>2 else getattr(logging, "INFO")
-logging.basicConfig(level=log_level)
+@click.command()
+@click.argument('path', type=click.Path(exists=True))
+@click.option('--loglevel', default='WARNING', type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']))
+@click.option('--followlinks/--no-followlinks', default=False)
+def runMe(path, loglevel, followlinks):
+    logging.basicConfig(level=getattr(logging, loglevel))
 
-process_directory(os.path.abspath(sys.argv[1]))
-logging.info(str(lengthMap))
-draw_histogram(lengthMap)
+    process_directory(path, followlinks)
+    logging.info(str(lengthMap))
+    draw_histogram(lengthMap)
+
+if __name__ == '__main__':
+    runMe()
