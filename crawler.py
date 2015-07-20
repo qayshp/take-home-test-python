@@ -30,12 +30,12 @@ def process_file(file, openZip=None):
         logging.info('Done with tgz file: {}'.format(file))
 
 def process_zip(file):
-    with zipfile.ZipFile(file, 'r') as openZip:
+    with zipfile.ZipFile(file=file, mode='r') as openZip:
         for zippedFile in openZip.namelist():
             process_file(zippedFile, openZip)
 
 def process_tgz(file):
-    with tarfile.open(file, 'r:gz') as openZip:
+    with tarfile.open(name=file, mode='r:gz') as openZip:
         for zippedFile in openZip.getnames():
             process_file(zippedFile, openZip)
 
@@ -47,26 +47,29 @@ def process_txt(file):
 
 def process_directory(dir):
     if (os.path.isdir(dir)):
-        for root, dirs, files in os.walk(dir):
+        for root, dirs, files in os.walk(top=dir, followlinks=False):
             for file in files:
                 process_file(os.path.join(root, file))
     else:
         print('Error, {} is not a directory.'.format(dir))
 
+def create_plot_array(data):
+    x = []
+    for key in data:
+        for i in range(data[key]):
+            x.append(key)
+    return x
+
+def draw_histogram(data):
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    numBins = 50
+    ax.hist(create_plot_array(data),numBins,color='green',alpha=0.8)
+    plt.show()
+
 log_level = sys.argv[2] if len(sys.argv)>2 else getattr(logging, "INFO")
 logging.basicConfig(level=log_level)
 
 process_directory(os.path.abspath(sys.argv[1]))
-print(str(lengthMap))
-
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
-x = []
-for key in lengthMap:
-    for i in range(lengthMap[key]):
-        x.append(key)
-numBins = 50
-ax.hist(x,numBins,color='green',alpha=0.8)
-plt.show()
+logging.info(str(lengthMap))
+draw_histogram(lengthMap)
