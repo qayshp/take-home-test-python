@@ -19,7 +19,8 @@ def process_file(file, openZip=None):
         if (openZip):
             process_txt(openZip.open(file, 'r'))
         else:
-            process_txt(open(file))
+            with open(file) as openFile:
+                process_txt(openFile)
     elif file.lower().endswith(".zip"):
         logging.info('Found zip file: {}'.format(file))
         process_zip(file)
