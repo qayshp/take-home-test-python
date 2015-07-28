@@ -4,6 +4,7 @@ import numpy as np
 import magic
 import sys
 import os
+import os.path
 import click
 import tarfile
 import logging
@@ -14,19 +15,19 @@ from collections import defaultdict
 lengthMap = defaultdict(int)
 
 def process_file(file, openZip=None):
-    if file.lower().endswith(".txt"):
+    if os.path.splitext(file)[1] == ".txt":
         logging.info('Found txt file: {}'.format(file))
         if (openZip):
             process_txt(openZip.open(file, 'r'))
         else:
             with open(file) as openFile:
                 process_txt(openFile)
-    elif file.lower().endswith(".zip"):
+    elif os.path.splitext(file)[1] == ".zip":
         logging.info('Found zip file: {}'.format(file))
         process_zip(file)
         logging.info('Done with zip file: {}'.format(file))
 
-    elif file.lower().endswith(".tgz") or file.lower().endswith(".tar.gz"):
+    elif os.path.splitext(file)[1] == ".tgz" or os.path.splitext(file)[1] == ".tar.gz":
         logging.info('Found tgz file: {}'.format(file))
         # process_tgz(file)
         logging.info('Done with tgz file: {}'.format(file))
